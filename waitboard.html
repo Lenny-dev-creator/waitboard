@@ -41,12 +41,10 @@ box-shadow: 0 3px 6px rgba(0,86,179,0.5);
 <button id="minusBtn">−</button>
 <button id="plusBtn">+</button>
 
-<!-- Firebase SDKs (modular style) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-// Your Firebase config here:
 const firebaseConfig = {
   apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY",
   authDomain: "waitboard.firebaseapp.com",
@@ -62,23 +60,22 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const waitTimeRef = ref(db, 'waitTime');
 
-// Update the displayed wait time when the value changes in Firebase
 onValue(waitTimeRef, (snapshot) => {
 const val = snapshot.val();
 document.getElementById('waitTime').textContent = val ?? 0;
 });
 
-// Update wait time safely using a transaction
 function updateWaitTime(change) {
-runTransaction(waitTimeRef, (currentValue) => {
-let newVal = (currentValue ?? 0) + change;
+runTransaction(waitTimeRef, (current) => {
+let newVal = (current ?? 0) + change;
 if (newVal < 0) newVal = 0;
 return newVal;
 });
 }
 
-document.getElementById('plusBtn').onclick = () => updateWaitTime(1);
-document.getElementById('minusBtn').onclick = () => updateWaitTime(-1);
+// Update by 5 instead of 1
+document.getElementById('plusBtn').onclick = () => updateWaitTime(5);
+document.getElementById('minusBtn').onclick = () => updateWaitTime(-5);
 </script>
 
 </body>
