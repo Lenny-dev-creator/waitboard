@@ -22,7 +22,7 @@ margin: 0 30px;
 border: none;
 border-radius: 20px;
 color: white;
-background-color: #007BFF; /* Bootstrap Blue */
+background-color: #007BFF;
 cursor: pointer;
 box-shadow: 0 6px 12px rgba(0,123,255,0.4);
 transition: background-color 0.3s;
@@ -42,40 +42,8 @@ box-shadow: 0 3px 6px rgba(0,86,179,0.5);
 <button id="plusBtn">+</button>
 
 <script>
-// This example uses Firebase Realtime Database for syncing
-// Replace with your Firebase config and init here
-const firebaseConfig = {
-const firebaseConfig = { apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY", authDomain: "waitboard.firebaseapp.com", databaseURL: "https://waitboard-default-rtdb.firebaseio.com", projectId: "waitboard", storageBucket: "waitboard.firebasestorage.app", messagingSenderId: "22252771116", appId: "1:22252771116:web:ffa17c8af6cd79e5443e89", measurementId: "G-EGELGGJRPV" };
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const waitTimeEl = document.getElementById('waitTime');
-const plusBtn = document.getElementById('plusBtn');
-const minusBtn = document.getElementById('minusBtn');
-
-// Listen for current wait time
-const waitTimeRef = db.ref('waitTime');
-waitTimeRef.on('value', snapshot => {
-const val = snapshot.val();
-waitTimeEl.textContent = val ?? 0;
-});
-
-// Update wait time in database
-function updateWaitTime(change) {
-waitTimeRef.transaction(current => {
-let newVal = (current || 0) + change;
-if (newVal < 0) newVal = 0; // Prevent negative time
-return newVal;
-});
-}
-
-plusBtn.onclick = () => updateWaitTime(1);
-minusBtn.onclick = () => updateWaitTime(-1);
+const firebaseConfig = { apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY", authDomain: "waitboard.firebaseapp.com", databaseURL: "https://waitboard-default-rtdb.firebaseio.com", projectId: "waitboard", storageBucket: "waitboard.firebasestorage.app", messagingSenderId: "22252771116", appId: "1:22252771116:web:ffa17c8af6cd79e5443e89", measurementId: "G-EGELGGJRPV"
 </script>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </body>
 </html>
