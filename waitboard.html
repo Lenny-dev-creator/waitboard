@@ -1,67 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Waitboard</title>
+<title>Waitboard Controller</title>
 <style>
-body { font-family: sans-serif; text-align: center; margin-top: 50px; }
-#screen { font-size: 100px; color: red; margin-top: 40px; }
-.hidden { display: none; }
-input { font-size: 20px; }
+body {
+font-family: Arial, sans-serif;
+text-align: center;
+padding: 50px;
+background: #f0f4f8;
+}
+#waitTime {
+font-size: 100px;
+margin: 20px 0;
+color: #333;
+}
+button {
+font-size: 80px;
+width: 120px;
+height: 120px;
+margin: 0 30px;
+border: none;
+border-radius: 20px;
+color: white;
+background-color: #007BFF; /* Bootstrap Blue */
+cursor: pointer;
+box-shadow: 0 6px 12px rgba(0,123,255,0.4);
+transition: background-color 0.3s;
+user-select: none;
+}
+button:active {
+background-color: #0056b3;
+box-shadow: 0 3px 6px rgba(0,86,179,0.5);
+}
 </style>
 </head>
 <body>
 
-<div id="modeSelect">
-<button onclick="setMode('display')">Display Mode</button>
-<button onclick="setMode('control')">Control Mode</button>
-</div>
-
-<div id="display" class="hidden">
-<div>🚦 Current Wait Time</div>
-<div id="screen">--</div>
-</div>
-
-<div id="control" class="hidden">
-<h2>Update Wait Time</h2>
-<input type="number" id="waitInput" placeholder="e.g. 30" />
-<button onclick="updateWait()">Set Wait</button>
-</div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<h1>Waitboard Controller</h1>
+<div id="waitTime">0</div>
+<button id="minusBtn">−</button>
+<button id="plusBtn">+</button>
 
 <script>
-// 🔧 Replace this with your actual Firebase config:
+// This example uses Firebase Realtime Database for syncing
+// Replace with your Firebase config and init here
 const firebaseConfig = {
-  apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY",
-  authDomain: "waitboard.firebaseapp.com",
-  databaseURL: "https://waitboard-default-rtdb.firebaseio.com",
-  projectId: "waitboard",
-  storageBucket: "waitboard.firebasestorage.app",
-  messagingSenderId: "22252771116",
-  appId: "1:22252771116:web:ffa17c8af6cd79e5443e89",
-  measurementId: "G-EGELGGJRPV"
+const firebaseConfig = { apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY", authDomain: "waitboard.firebaseapp.com", databaseURL: "https://waitboard-default-rtdb.firebaseio.com", projectId: "waitboard", storageBucket: "waitboard.firebasestorage.app", messagingSenderId: "22252771116", appId: "1:22252771116:web:ffa17c8af6cd79e5443e89", measurementId: "G-EGELGGJRPV" };
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function setMode(mode) {
-document.getElementById('modeSelect').classList.add('hidden');
-document.getElementById('display').classList.toggle('hidden', mode !== 'display');
-document.getElementById('control').classList.toggle('hidden', mode !== 'control');
+const waitTimeEl = document.getElementById('waitTime');
+const plusBtn = document.getElementById('plusBtn');
+const minusBtn = document.getElementById('minusBtn');
 
-if (mode === 'display') {
-db.ref('waitTime').on('value', snap => {
-document.getElementById('screen').textContent = snap.val() || '--';
+// Listen for current wait time
+const waitTimeRef = db.ref('waitTime');
+waitTimeRef.on('value', snapshot => {
+const val = snapshot.val();
+waitTimeEl.textContent = val ?? 0;
+});
+
+// Update wait time in database
+function updateWaitTime(change) {
+waitTimeRef.transaction(current => {
+let newVal = (current || 0) + change;
+if (newVal < 0) newVal = 0; // Prevent negative time
+return newVal;
 });
 }
-}
 
-function updateWait() {
-const value = document.getElementById('waitInput').value;
-db.ref('waitTime').set(value);
-}
+plusBtn.onclick = () => updateWaitTime(1);
+minusBtn.onclick = () => updateWaitTime(-1);
 </script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </body>
 </html>
