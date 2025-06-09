@@ -42,7 +42,92 @@ box-shadow: 0 3px 6px rgba(0,86,179,0.5);
 <button id="plusBtn">+</button>
 
 <script>
-const firebaseConfig = { apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY", authDomain: "waitboard.firebaseapp.com", databaseURL: "https://waitboard-default-rtdb.firebaseio.com", projectId: "waitboard", storageBucket: "waitboard.firebasestorage.app", messagingSenderId: "22252771116", appId: "1:22252771116:web:ffa17c8af6cd79e5443e89", measurementId: "G-EGELGGJRPV"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Waitboard Controller</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+text-align: center;
+padding: 50px;
+background: #f0f4f8;
+}
+#waitTime {
+font-size: 100px;
+margin: 20px 0;
+color: #333;
+}
+button {
+font-size: 80px;
+width: 120px;
+height: 120px;
+margin: 0 30px;
+border: none;
+border-radius: 20px;
+color: white;
+background-color: #007BFF;
+cursor: pointer;
+box-shadow: 0 6px 12px rgba(0,123,255,0.4);
+transition: background-color 0.3s;
+user-select: none;
+}
+button:active {
+background-color: #0056b3;
+box-shadow: 0 3px 6px rgba(0,86,179,0.5);
+}
+</style>
+</head>
+<body>
+
+<h1>Waitboard Controller</h1>
+<div id="waitTime">0</div>
+<button id="minusBtn">−</button>
+<button id="plusBtn">+</button>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+<script>
+// Replace the values below with your Firebase project config
+const firebaseConfig = {
+  apiKey: "AIzaSyCLkpSbt2tULpalMQsiLiR48GTeqeg6QVY",
+  authDomain: "waitboard.firebaseapp.com",
+  databaseURL: "https://waitboard-default-rtdb.firebaseio.com",
+  projectId: "waitboard",
+  storageBucket: "waitboard.firebasestorage.app",
+  messagingSenderId: "22252771116",
+  appId: "1:22252771116:web:ffa17c8af6cd79e5443e89",
+  measurementId: "G-EGELGGJRPV"};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+const waitTimeRef = db.ref('waitTime');
+
+// Update waitTime display when value changes in Firebase
+waitTimeRef.on('value', snapshot => {
+const val = snapshot.val();
+document.getElementById('waitTime').textContent = val ?? 0;
+});
+
+// Change waitTime in Firebase on button click
+function updateWaitTime(change) {
+waitTimeRef.transaction(current => {
+let newVal = (current || 0) + change;
+if (newVal < 0) newVal = 0;
+return newVal;
+});
+}
+
+document.getElementById('plusBtn').onclick = () => updateWaitTime(1);
+document.getElementById('minusBtn').onclick = () => updateWaitTime(-1);
+</script>
+
+</body>
+</html>
+
 </script>
 
 </body>
